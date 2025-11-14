@@ -3,19 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Enum\Categoria;
+use App\Models\Enum\Risco;
+use DateTime;
 
 class Usuario extends Model
 {
     // Atributos
-    protected $id;
-    protected $nome;
-    protected $email;
-    protected $senha;
-    protected $criado_em;
-    protected $status;
-
+    protected Int $id;
+    protected String $nome;
+    protected String $email;
+    protected String $senha;
+    protected DateTime $criado_em;
+    protected bool $status;
     protected Categoria $categoria;
-    protected Perfil $perfil;
+    protected Risco $risco;
 
 
     public function getId()
@@ -62,12 +64,12 @@ class Usuario extends Model
         return $this;
     }
 
-    public function getCriadoEm(): int
+    public function getCriadoEm(): DateTime
     {
         return $this->criado_em;
     }
 
-    public function setCriadoEm(int $criado_em)
+    public function setCriadoEm(DateTime $criado_em)
     {
         $this->criado_em = $criado_em;
         return $this;
@@ -89,33 +91,20 @@ class Usuario extends Model
         return $this->categoria;
     }
 
-    public function setCategoria($categoria)
+    public function setCategoria(Categoria $categoria): static
     {
         $this->categoria = $categoria;
         return $this;
     }
 
-    public function getPerfil()
+    public function getPerfil(): Risco
     {
-        return $this->perfil;
+        return $this->risco;
     }
 
-    public function setPerfil($perfil)
+    public function setPerfil(Risco $risco): static
     {
-        $this->perfil = $perfil;
+        $this->risco = $risco;
         return $this;
-    }
-
-    // --- Métodos de comportamento ---
-
-    public function autenticar(): void
-    {
-        // Lógica de autenticação
-        // Exemplo: verificar email e senha
-    }
-
-    public function atualizarPerfil(): void
-    {
-        // Lógica para atualizar dados do usuário
     }
 }
