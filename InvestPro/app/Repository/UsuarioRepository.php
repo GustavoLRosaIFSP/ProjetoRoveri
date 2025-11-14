@@ -16,6 +16,11 @@ class UsuarioRepository
         return Usuario::find($id);
     }
 
+    public function buscarEmail($email)
+    {
+        return Usuario::where('email', $email)->first();
+    }
+
     public function create(array $data)
     {
         return Usuario::create($data);
