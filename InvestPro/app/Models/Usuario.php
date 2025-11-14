@@ -9,16 +9,23 @@ use DateTime;
 
 class Usuario extends Model
 {
-    // Atributos
-    protected Int $id;
-    protected String $nome;
-    protected String $email;
-    protected String $senha;
-    protected DateTime $criado_em;
-    protected bool $status;
-    protected Categoria $categoria;
-    protected Risco $risco;
 
+    protected $fillable = [
+        'nome',
+        'email',
+        'senha',
+        'criado_em',
+        'status',
+        'categoria',
+        'risco',
+    ];
+
+    protected $casts = [
+        'criado_em' => 'datetime',
+        'status' => 'boolean',
+        'categoria' => Categoria::class,
+        'risco' => Risco::class,
+    ];
 
     public function getId()
     {
@@ -86,7 +93,7 @@ class Usuario extends Model
         return $this;
     }
 
-    public function getCategoria()
+    public function getCategoria(): Categoria
     {
         return $this->categoria;
     }
