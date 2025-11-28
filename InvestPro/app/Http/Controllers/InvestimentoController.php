@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Ativo;  
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,7 +25,8 @@ class InvestimentoController extends Controller
      */
     public function create(): View
     {
-        return view('investimento.create');
+        $ativos = Ativo::all();
+        return view('investimentos.create', compact('ativos'));
     }
 
     /**
@@ -37,12 +39,13 @@ class InvestimentoController extends Controller
             'dataInicio' => 'required|date',
             'dataFim' => 'required|date|after_or_equal:dataInicio',
             'retornoPercentual' => 'required|numeric',
-            'ativo_id' => 'required|exists:ativos,id'
+            'ativo_id' => 'nullable|exists:ativos,id'
+
         ]);
 
         Investimento::create($validated);
 
-        return redirect()->route('investimento.index')
+        return redirect()->route('investimentos.index')
             ->with('success', 'Investimento cadastrado com sucesso!');
     }
 
@@ -53,7 +56,8 @@ class InvestimentoController extends Controller
     {
         $investimento = Investimento::findOrFail($id);
 
-        return view('investimento.show', compact('investimento'));
+        return view('investimentos.show', compact('investimento'));
+
     }
 
     /**
@@ -62,9 +66,11 @@ class InvestimentoController extends Controller
     public function edit(string $id): View
     {
         $investimento = Investimento::findOrFail($id);
+        $ativos = Ativo::all();
 
-        return view('investimento.edit', compact('investimento'));
+        return view('investimentos.edit', compact('investimento', 'ativos'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -76,13 +82,13 @@ class InvestimentoController extends Controller
             'dataInicio' => 'required|date',
             'dataFim' => 'required|date|after_or_equal:dataInicio',
             'retornoPercentual' => 'required|numeric',
-            'ativo_id' => 'required|exists:ativos,id'
+            'ativo_id' => 'nullable|exists:ativos,id'
         ]);
 
         $investimento = Investimento::findOrFail($id);
         $investimento->update($validated);
 
-        return redirect()->route('investimento.index')
+        return redirect()->route('investimentos.index')
             ->with('success', 'Investimento atualizado com sucesso!');
     }
 
@@ -93,9 +99,6 @@ class InvestimentoController extends Controller
     {
         $investimento = Investimento::findOrFail($id);
         $investimento->delete();
-
-        return redirect()->route('investimento.index')
-            ->with('success', 'Investimento excluído com sucesso!');
     }
 
     public function calculaRetorno(string $id)
@@ -116,7 +119,7 @@ class InvestimentoController extends Controller
         $investimento->valorFinal = $valorFinal ?? null;
         $investimento->save();
 
-        return redirect()->route('investimento.index')
+        return redirect()->route('investimentos.index')
             ->with('success', "Investimento #{$investimento->id} calculado com sucesso! Valor final: R$ " . number_format($valorFinal, 2, ',', '.'));
     }
     

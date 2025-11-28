@@ -17,7 +17,7 @@ return new class extends Migration
         $table->date('dataInicio');
         $table->date('dataFim');
         $table->double('retornoPercentual');
-        $table->foreignId('ativo_id')->constrained()->onDelete('cascade');
+        $table->foreignId('ativo_id')->nullable()->constrained()->onDelete('cascade');
 
         $table->timestamps();
     });
