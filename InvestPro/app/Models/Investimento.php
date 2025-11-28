@@ -2,13 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Investimento extends Model
 {
-    public $id;
-    public $valorAplicado;
-    public $dataInicio;
-    public $dataFim;
-    public $retornoPercentual;
+    use HasFactory;
+
+    protected $fillable = [
+        'valorAplicado',
+        'dataInicio',
+        'dataFim',
+        'retornoPercentual',
+        'ativo_id'
+    ];
+
+    public function ativo()
+    {
+        return $this->belongsTo(Ativo::class);
+    }
+
 }
+
+?>
