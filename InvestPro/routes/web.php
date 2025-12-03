@@ -18,15 +18,15 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/carteira', [CarteiraController::class, 'index'])->name('carteira.index');
-    Route::get('/carteira/{id}', [CarteiraController::class, 'show'])->name('carteira.show');
-
-    Route::post('/carteira/{id}/investimentos', [CarteiraController::class, 'adicionarInvestimento'])
+    Route::get('/carteira', [CarteiraController::class, 'index'])
+        ->name('carteira.index');
+    Route::post('/carteira/investimentos/adicionar', [CarteiraController::class, 'adicionarInvestimento'])
         ->name('carteira.investimentos.add');
 
-    Route::delete('/carteira/{id}/investimentos/{invest}', [CarteiraController::class, 'removerInvestimento'])
+    Route::delete('/carteira/investimentos/{idInvest}/remover', [CarteiraController::class, 'removerInvestimento'])
         ->name('carteira.investimentos.remove');
-
+    Route::get('/carteira/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
+        ->name('carteira.retorno');
     Route::get('/carteira/{id}/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
         ->name('carteiras.retorno');
 

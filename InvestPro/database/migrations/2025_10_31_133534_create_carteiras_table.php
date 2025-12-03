@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('carteiras', function (Blueprint $table) {
             $table->id();
+
+            // Relacionamento com usuários
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+
+            // Dados da carteira
+            $table->string('nome');
+            $table->decimal('valor_total', 10, 2)->default(0);
+            $table->decimal('rentabilidade', 10, 2)->default(0);
+
             $table->timestamps();
         });
     }

@@ -10,43 +10,48 @@ class CarteiraController extends Controller
 {
     public function index()
     {
-        $carteiras = Carteira::where('user_id', auth()->id())->get();
-        return view('carteiras.index', compact('carteiras'));
+        $carteira = Carteira::where('user_id', auth()->id())->first();
+
+        if (!$carteira) {
+            $carteira = Carteira::create([
+                'user_id' => auth()->id(),
+                'nome' => 'Minha Carteira',
+                'valor_total' => 0,
+                'rentabilidade' => 0,
+            ]);
+        }
+
+        return view('carteira.index', compact('carteira'));
     }
-
-    public function show($id)
+    public function adicionarInvestimento(Request $request)
     {
-        $carteira = Carteira::findOrFail($id);
-        return view('carteiras.show', compact('carteira'));
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        $investimento = new Investimento($request->all());
+        $investimento->carteira_id = $carteira->id;
+        $investimento->save();
+
+        return back()->with('success', 'Investimento adicionado com sucesso!');
     }
-
-    public function adicionarInvestimento(Request $request, $idCarteira)
+    public function removerInvestimento($idInvest)
     {
-        $carteira = Carteira::findOrFail($idCarteira);
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
-        $invest = new Investimento($request->all());
-        $invest->carteira_id = $carteira->id;
-        $carteira->adicionarInvestimento($invest);
+        $investimento = Investimento::where('id', $idInvest)
+            ->where('carteira_id', $carteira->id)
+            ->firstOrFail();
 
-        return redirect()->back()->with('success', 'Investimento adicionado!');
+        $investimento->delete();
+
+        return back()->with('success', 'Investimento removido com sucesso!');
     }
-
-    public function removerInvestimento($idCarteira, $idInvest)
+    public function calcularRetornoTotal()
     {
-        $carteira = Carteira::findOrFail($idCarteira);
-
-        $carteira->removerInvestimento($idInvest);
-
-        return redirect()->back()->with('success', 'Investimento removido!');
-    }
-
-    public function calcularRetornoTotal($idCarteira)
-    {
-        $carteira = Carteira::findOrFail($idCarteira);
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
         $total = $carteira->calcularRetornoTotal();
 
-        return response()->json(data: [
+        return response()->json([
             'carteira_id' => $carteira->id,
             'retorno_total' => $total
         ]);
