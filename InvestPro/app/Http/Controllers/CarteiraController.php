@@ -2,63 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Carteira;
+use App\Models\Investimento;
 use Illuminate\Http\Request;
 
 class CarteiraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $carteiras = Carteira::where('user_id', auth()->id())->get();
+        return view('carteiras.index', compact('carteiras'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        $carteira = Carteira::findOrFail($id);
+        return view('carteiras.show', compact('carteira'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function adicionarInvestimento(Request $request, $idCarteira)
     {
-        //
+        $carteira = Carteira::findOrFail($idCarteira);
+
+        $invest = new Investimento($request->all());
+        $invest->carteira_id = $carteira->id;
+        $carteira->adicionarInvestimento($invest);
+
+        return redirect()->back()->with('success', 'Investimento adicionado!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function removerInvestimento($idCarteira, $idInvest)
     {
-        //
+        $carteira = Carteira::findOrFail($idCarteira);
+
+        $carteira->removerInvestimento($idInvest);
+
+        return redirect()->back()->with('success', 'Investimento removido!');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function calcularRetornoTotal($idCarteira)
     {
-        //
-    }
+        $carteira = Carteira::findOrFail($idCarteira);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $total = $carteira->calcularRetornoTotal();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json([
+            'carteira_id' => $carteira->id,
+            'retorno_total' => $total
+        ]);
     }
 }
