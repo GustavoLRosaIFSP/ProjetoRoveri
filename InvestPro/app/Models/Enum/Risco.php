@@ -2,10 +2,18 @@
 
 namespace App\Models\Enum;
 
-use Illuminate\Database\Eloquent\Model;
-enum Risco{
-    case conservador;
-    case moderado;
-    case arrojado;
+enum Risco: string
+{
+    case CONSERVADOR = 'conservador';
+    case MODERADO = 'moderado';
+    case ARROJADO = 'arrojado';
+    
+    public function label(): string
+    {
+        return match($this) {
+            self::CONSERVADOR => 'Conservador',
+            self::MODERADO => 'Moderado',
+            self::ARROJADO => 'Arrojado',
+        };
+    }
 }
-?>

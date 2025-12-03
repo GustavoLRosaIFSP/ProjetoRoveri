@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ativo extends Model
 {
-    public $id;
-    public $descricao;
-    public $codigoTicker;
-    public $precoAtual;
+    protected $fillable = [
+        'nome', 
+        'codigo_ticker',
+        'preco_atual'
+    ];
+
+    public function investimentos()
+    {
+        return $this->hasMany(Investimento::class);
+    }
 }

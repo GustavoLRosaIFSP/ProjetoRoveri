@@ -13,7 +13,7 @@
                         Dashboard
                     </a>
 
-                    <a href="/investimentos"
+                    <a href="{{ route('investimentos.index') }}"
                        class="text-purple-300 hover:text-purple-400 text-sm font-semibold transition">
                         Investimentos
                     </a>

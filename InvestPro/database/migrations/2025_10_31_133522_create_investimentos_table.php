@@ -9,10 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('investimentos', function (Blueprint $table) {
             $table->id();
+            $table->decimal('valor_aplicado', 15, 2);
+            $table->date('data_inicio');
+            $table->date('data_fim')->nullable();
+            $table->decimal('retorno_percentual', 5, 2)->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

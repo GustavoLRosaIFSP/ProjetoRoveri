@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('ativos', function (Blueprint $table) {
             $table->id();
+            $table->string('nome');
+            $table->string('codigo_ticker')->nullable();
+            $table->double('preco_atual');
             $table->timestamps();
         });
     }

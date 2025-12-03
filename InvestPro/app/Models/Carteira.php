@@ -2,31 +2,56 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Carteira extends Usuario
 {
-    private $id;
-    private $nome;
-    private $valor_total;
-    private $quantidade;
-    private $investimentos;
+    use HasFactory;
 
-
-    public function add_investimento(Investimento $investimento){
-        $this->investimentos[]=$investimento;
+    protected $fillable = [
+        'nome',
+        'valor_total',
+        'quantidade',
+        'user_id'
+    ];
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
-
-    public function calcularRetornoTotal(){
-        
+    public function investimentos()
+    {
+        return $this->hasMany(Investimento::class);
     }
+    public function adicionarInvestimento(Investimento $investimento)
+    {
+        $this->investimentos()->save($investimento);
 
-    public function adicionarInvestimento(){
+        $this->valor_total += $investimento->valorAplicado;
+        $this->quantidade++;
 
+        $this->save();
     }
+    public function removerInvestimento($id)
+    {
+        $invest = $this->investimentos()->find($id);
 
-    public function removerInvestimento(){
+        if (!$invest) {
+            return false;
+        }
 
+        $this->valor_total -= $invest->valorAplicado;
+        $this->quantidade--;
+
+        $this->save();
+
+        $invest->delete();
+        return true;
+    }
+    public function calcularRetornoTotal()
+    {
+        return $this->investimentos->sum(function ($inv) {
+            return $inv->valorAplicado * ($inv->retornoPercentual / 100);
+        });
     }
 }
-?>

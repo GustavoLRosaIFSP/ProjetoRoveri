@@ -2,63 +2,58 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Carteira;
+use App\Models\Investimento;
 use Illuminate\Http\Request;
 
 class CarteiraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
-    }
+        $carteira = Carteira::where('user_id', auth()->id())->first();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        if (!$carteira) {
+            $carteira = Carteira::create([
+                'user_id' => auth()->id(),
+                'nome' => 'Minha Carteira',
+                'valor_total' => 0,
+                'rentabilidade' => 0,
+            ]);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('carteira.index', compact('carteira'));
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function adicionarInvestimento(Request $request)
     {
-        //
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        $investimento = new Investimento($request->all());
+        $investimento->carteira_id = $carteira->id;
+        $investimento->save();
+
+        return back()->with('success', 'Investimento adicionado com sucesso!');
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function removerInvestimento($idInvest)
     {
-        //
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        $investimento = Investimento::where('id', $idInvest)
+            ->where('carteira_id', $carteira->id)
+            ->firstOrFail();
+
+        $investimento->delete();
+
+        return back()->with('success', 'Investimento removido com sucesso!');
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function calcularRetornoTotal()
     {
-        //
-    }
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $total = $carteira->calcularRetornoTotal();
+
+        return response()->json([
+            'carteira_id' => $carteira->id,
+            'retorno_total' => $total
+        ]);
     }
 }
