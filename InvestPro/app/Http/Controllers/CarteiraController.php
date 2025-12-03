@@ -46,7 +46,7 @@ class CarteiraController extends Controller
 
         $total = $carteira->calcularRetornoTotal();
 
-        return response()->json([
+        return response()->json(data: [
             'carteira_id' => $carteira->id,
             'retorno_total' => $total
         ]);
