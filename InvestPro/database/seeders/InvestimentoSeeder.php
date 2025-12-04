@@ -15,3 +15,4 @@ class InvestimentoSeeder extends Seeder
         //
     }
 }
+

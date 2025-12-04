@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Models\Investimento;
+use App\Models\Ativo;
+use App\Models\Carteira;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InvestimentoController extends Controller
@@ -14,9 +15,18 @@ class InvestimentoController extends Controller
      */
     public function index(): View
     {
-        $investimentos = Investimento::orderBy('dataFim', 'desc')->get();
+        $usuario = auth()->user();
+        $riscoUsuario = $usuario->risco;
 
-        return view('investimento.index', compact('investimentos'));
+        $ativos = Ativo::orderByRaw("CASE WHEN risco = ? THEN 0 ELSE 1 END", [$riscoUsuario])
+                    ->orderBy('nome', 'asc')
+                    ->get();
+
+        if (request()->wantsJson()) {
+            return response()->json($ativos);
+        }
+
+        return view('investimentos.index', compact('ativos'));
     }
 
     /**
@@ -24,7 +34,7 @@ class InvestimentoController extends Controller
      */
     public function create(): View
     {
-        return view('investimento.create');
+        return view('investimentos.create');
     }
 
     /**
@@ -32,95 +42,104 @@ class InvestimentoController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'valorAplicado' => 'required|numeric',
-            'dataInicio' => 'required|date',
-            'dataFim' => 'required|date|after_or_equal:dataInicio',
-            'retornoPercentual' => 'required|numeric',
-            'ativo_id' => 'required|exists:ativos,id'
+        $request->validate([
+            'ativo_id' => 'required|exists:ativos,id',
+            'valor_aplicado' => 'required|numeric|min:0.01',
         ]);
 
-        Investimento::create($validated);
+        $ativo = Ativo::findOrFail($request->ativo_id);
 
-        return redirect()->route('investimento.index')
-            ->with('success', 'Investimento cadastrado com sucesso!');
+        $quantidade = $request->valor_aplicado / $ativo->preco_atual;
+
+        $carteira = Carteira::firstOrCreate(
+            ['user_id' => auth()->id()],
+            ['nome' => 'Minha Carteira', 'valor_total' => 0, 'quantidade' => 0]
+        );
+
+        Investimento::create([
+            'carteira_id'      => $carteira->id,
+            'ativo_id'         => $ativo->id,
+
+            'snapshot_nome'    => $ativo->nome,
+            'snapshot_ticker'  => $ativo->codigo_ticker,
+            'snapshot_preco'   => $ativo->preco_atual,
+            'snapshot_tipo'    => $ativo->tipo,
+
+            'valor_aplicado'   => $request->valor_aplicado,
+            'quantidade'       => $quantidade,
+            'data_inicio'      => now(),
+        ]);
+
+        $carteira->valor_total += $request->valor_aplicado;
+        $carteira->quantidade += 1;
+        $carteira->save();
+
+        return redirect()->route('investimentos.index')
+                        ->with('success', 'Investimento criado com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id): View
+    public function show(Investimento $investimento)
     {
-        $investimento = Investimento::findOrFail($id);
+        if (request()->wantsJson()) {
+            return response()->json($investimento);
+        }
 
-        return view('investimento.show', compact('investimento'));
+        return view('investimentos.show', compact('investimento'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): View
+    public function edit(Investimento $investimento)
     {
-        $investimento = Investimento::findOrFail($id);
-
-        return view('investimento.edit', compact('investimento'));
+        return view('investimentos.edit', compact('investimento'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Investimento $investimento)
     {
         $validated = $request->validate([
-            'valorAplicado' => 'required|numeric',
+            'valorAplicado' => 'required|numeric|min:0',
             'dataInicio' => 'required|date',
-            'dataFim' => 'required|date|after_or_equal:dataInicio',
-            'retornoPercentual' => 'required|numeric',
-            'ativo_id' => 'required|exists:ativos,id'
+            'dataFim' => 'nullable|date',
+            'retornoPercentual' => 'nullable|numeric',
         ]);
 
-        $investimento = Investimento::findOrFail($id);
         $investimento->update($validated);
 
-        return redirect()->route('investimento.index')
+        if ($request->wantsJson()) {
+            return response()->json($investimento);
+        }
+
+        return redirect()->route('investimentos.index')
             ->with('success', 'Investimento atualizado com sucesso!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Investimento $investimento)
     {
-        $investimento = Investimento::findOrFail($id);
         $investimento->delete();
 
-        return redirect()->route('investimento.index')
+        if (request()->wantsJson()) {
+            return response()->json(['message' => 'Investimento excluído com sucesso']);
+        }
+
+        return redirect()->route('investimentos.index')
             ->with('success', 'Investimento excluído com sucesso!');
     }
 
-    public function calculaRetorno(string $id)
+    /**
+     * Selecionar ativo para criar investimento
+     */
+    public function selecionarAtivo(Ativo $ativo)
     {
-        $investimento = Investimento::findOrFail($id);
-
-        $valorAplicado = $investimento->valorAplicado;
-        $retornoPercentual = $investimento->retornoPercentual;
-        $dataInicio = Carbon::parse($investimento->dataInicio);
-        $dataFim = Carbon::parse($investimento->dataFim);
-
-        $dias = $dataInicio->diffInDays($dataFim);
-
-        $totalObtido = $valorAplicado * ($retornoPercentual / 100);
-
-        $valorFinal = $valorAplicado + $totalObtido;
-
-        $investimento->valorFinal = $valorFinal ?? null;
-        $investimento->save();
-
-        return redirect()->route('investimento.index')
-            ->with('success', "Investimento #{$investimento->id} calculado com sucesso! Valor final: R$ " . number_format($valorFinal, 2, ',', '.'));
-    }
-    
-    public function encerrarInvestimento(){
-        
+        return view('investimentos.create', compact('ativo'));
     }
 }

@@ -2,11 +2,20 @@
 
 namespace App\Models\Enum;
 
-use Illuminate\Database\Eloquent\Model;
-enum Tipo{
-    case acao;
-    case fundo;
-    case tesouro;
-    case bitcoin;
+enum Tipo: string
+{
+    case ACAO = 'Ação';
+    case FII = 'FII';
+    case ETF = 'ETF';
+    case RENDA_FIXA = 'Renda Fixa';
+
+    public function label(): string
+    {
+        return match($this) {
+            self::ACAO => 'Ação',
+            self::FII => 'FII',
+            self::ETF => 'ETF',
+            self::RENDA_FIXA => 'Renda Fixa',
+        };
+    }
 }
-?>
