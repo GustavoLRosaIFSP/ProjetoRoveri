@@ -8,17 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Investimento extends Model
 {
     protected $fillable = [
-        'valorAplicado',
-        'dataInicio'
-        'dataFim'
-        'retornoPercentual'
-        'ativoId'
-    ];
-
-    protected $casts =[
-        'dataFim' => 'datetime',
-        'dataFim' => 'datetime',
-        'ativoId' => Ativo::class 
+        'carteira_id',
+        'ativo_id',
+        'snapshot_nome',
+        'snapshot_ticker',
+        'snapshot_preco',
+        'snapshot_tipo',
+        'valor_aplicado',
+        'quantidade',
+        'data_inicio',
+        'data_fim',
     ];
 
     public function getId()
@@ -41,43 +40,12 @@ class Investimento extends Model
         return $this;
     }
 
-    public function getDataInicio():DateTime{
-        return $this->dataInicio;
+    public function getRendimentoMensalAttribute()
+    {
+        $percentual = $this->ativo->rendimento_percentual;
 
+        return $this->valor_aplicado * ($percentual / 100);
     }
-
-    public function setDataInicio(DateTime $dataInicio):DateTime{
-        $this->dataInicio = $dataInicio;
-        return $this;
-    }
-
-    public function getDataFim():DateTime{
-        return $this->dataFim;
-
-    }
-
-    public function setDataFim(DateTime $dataFim):DateTime{
-        $this->dataFim = $dataFim;
-        return $this;
-    }
-
-    public function getRetornoPercentual(){
-        return $this->retornoPercentual;
-    }
-
-    public function setRetornoPercentual(double $retornoPercentual){
-        $this->retornoPercentual = $retornoPercentual;
-        return $this;
-    }
-
-    public function getAtivoId():Ativo{
-        return $this->ativoId;
-    }
-
-    public function setAtivoId():Ativo{
-        $this->ativoId = $ativoId;
-        return $this;
-    }
- }
+}
 
 ?>

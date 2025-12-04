@@ -21,3 +21,4 @@ class InvestimentoFactory extends Factory
         ];
     }
 }
+

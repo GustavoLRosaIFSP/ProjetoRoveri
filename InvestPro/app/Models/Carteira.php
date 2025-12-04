@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Carteira extends Usuario
+class Carteira extends Model
 {
     use HasFactory;
 
@@ -15,23 +15,27 @@ class Carteira extends Usuario
         'quantidade',
         'user_id'
     ];
+
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function investimentos()
     {
         return $this->hasMany(Investimento::class);
     }
+
     public function adicionarInvestimento(Investimento $investimento)
     {
         $this->investimentos()->save($investimento);
 
-        $this->valor_total += $investimento->valorAplicado;
+        $this->valor_total += $investimento->valor_aplicado;
         $this->quantidade++;
 
         $this->save();
     }
+
     public function removerInvestimento($id)
     {
         $invest = $this->investimentos()->find($id);
@@ -40,7 +44,7 @@ class Carteira extends Usuario
             return false;
         }
 
-        $this->valor_total -= $invest->valorAplicado;
+        $this->valor_total -= $invest->valor_aplicado;
         $this->quantidade--;
 
         $this->save();
@@ -48,10 +52,11 @@ class Carteira extends Usuario
         $invest->delete();
         return true;
     }
+
     public function calcularRetornoTotal()
     {
         return $this->investimentos->sum(function ($inv) {
-            return $inv->valorAplicado * ($inv->retornoPercentual / 100);
+            return $inv->valor_aplicado * ($inv->retorno_percentual / 100);
         });
     }
 }

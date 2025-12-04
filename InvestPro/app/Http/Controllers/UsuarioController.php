@@ -2,104 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UsuarioController extends Controller
 {
-    /**
-     * Listar todos os usuários
-     */
     public function index()
     {
-        return response()->json(Usuario::all(), 200);
+        $usuarios = User::with(['categoria','perfil'])->get();
+        return view('usuarios.index', compact('usuarios'));
     }
 
-    /**
-     * Criar um novo usuário
-     */
+    public function create()
+    {
+        return view('usuarios.create');
+    }
+
     public function store(Request $request)
     {
-        // Validação simples
-        $request->validate([
-            'nome' => 'required|string',
-            'email' => 'required|email',
-            'senha' => 'required|string|min:6',
-            'categoria' => 'required',
-            'risco' => 'required',
-        ]);
-
-        // Verificar email duplicado
-        if (Usuario::where('email', $request->email)->first()) {
-            return response()->json(['erro' => 'Email já cadastrado'], 400);
-        }
-
-        // Criar usuário
-        $usuario = Usuario::create([
-            'nome' => $request->nome,
-            'email' => $request->email,
-            'senha' => Hash::make($request->senha),
-            'status' => $request->status ?? true,
-            'categoria' => $request->categoria,
-            'risco' => $request->risco,
-            'criado_em' => now(),
-        ]);
-
-        return response()->json($usuario, 201);
+        User::create($request->all());
+        return redirect()->route('usuarios.index');
     }
 
-    /**
-     * Mostrar um usuário pelo ID
-     */
-    public function show(string $id)
+    public function edit($id)
     {
-        $usuario = Usuario::find($id);
-
-        if (!$usuario) {
-            return response()->json(['erro' => 'Usuário não encontrado'], 404);
-        }
-
-        return response()->json($usuario, 200);
+        $usuario = User::findOrFail($id);
+        return view('usuarios.edit', compact('usuario'));
     }
 
-    /**
-     * Atualizar um usuário
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $usuario = Usuario::find($id);
-
-        if (!$usuario) {
-            return response()->json(['erro' => 'Usuário não encontrado'], 404);
-        }
-
-        // Se atualizar senha, criptografa
-        if ($request->has('senha')) {
-            $request->merge([
-                'senha' => Hash::make($request->senha)
-            ]);
-        }
-
-        // Atualizar usuário
+        $usuario = User::findOrFail($id);
         $usuario->update($request->all());
-
-        return response()->json($usuario, 200);
+        return redirect()->route('usuarios.index');
     }
 
-    /**
-     * Excluir usuário
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        $usuario = Usuario::find($id);
-
-        if (!$usuario) {
-            return response()->json(['erro' => 'Usuário não encontrado'], 404);
-        }
-
-        $usuario->delete();
-
-        return response()->json(['mensagem' => 'Usuário removido com sucesso'], 200);
+        User::destroy($id);
+        return redirect()->route('usuarios.index');
     }
 }
