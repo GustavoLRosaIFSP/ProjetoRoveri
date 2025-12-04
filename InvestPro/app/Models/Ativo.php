@@ -9,8 +9,6 @@ use App\Models\Enum\Risco;
 class Ativo extends Model
 {
     protected $fillable = [
-<<<<<<< HEAD
-<<<<<<< HEAD
         'nome',
         'codigo_ticker',
         'preco_atual',
@@ -38,22 +36,5 @@ class Ativo extends Model
     {
         return $this->valor_aplicado * ($this->ativo->rendimento_percentual / 100);
     }
-
-=======
-=======
->>>>>>> origin/develop
-        'nome', 
-        'codigo_ticker',
-        'preco_atual'
-    ];
-
-    public function investimentos()
-    {
-        return $this->hasMany(Investimento::class);
-    }
-<<<<<<< HEAD
->>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
-=======
->>>>>>> origin/develop
 }
 

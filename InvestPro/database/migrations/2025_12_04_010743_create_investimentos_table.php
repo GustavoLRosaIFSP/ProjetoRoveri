@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('snapshot_ticker');
             $table->double('snapshot_preco');
             $table->string('snapshot_tipo');
-
+            $table->integer('quantidade');
             // Dados do investimento
             $table->double('valor_aplicado');
             $table->date('data_inicio');

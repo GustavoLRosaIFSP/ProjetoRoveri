@@ -5,8 +5,6 @@ use App\Http\Controllers\InvestimentoController;
 use App\Http\Controllers\AtivoController;
 use App\Http\Controllers\CarteiraController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CarteiraController;
-
 
 Route::get('/', function () {
     return view('home');
@@ -39,8 +37,6 @@ Route::middleware('auth')->group(function () {
 
 });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 Route::middleware('auth')->group(function () {
     Route::resource('investimentos', InvestimentoController::class);
 });
@@ -65,11 +61,5 @@ Route::get('/investimentos/selecionar/{ativo}', [InvestimentoController::class, 
 
 Route::post('/carteira/remover/{id}', [CarteiraController::class, 'remover'])
     ->name('carteira.remover');
-=======
->>>>>>> origin/develop
 
 require __DIR__.'/auth.php';
-=======
-
-require __DIR__.'/auth.php';
->>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7

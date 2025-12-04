@@ -15,37 +15,27 @@ class Carteira extends Model
         'quantidade',
         'user_id'
     ];
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
-=======
->>>>>>> origin/develop
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
->>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
-=======
->>>>>>> origin/develop
     public function investimentos()
     {
         return $this->hasMany(Investimento::class);
     }
+
     public function adicionarInvestimento(Investimento $investimento)
     {
         $this->investimentos()->save($investimento);
 
-        $this->valor_total += $investimento->valorAplicado;
+        $this->valor_total += $investimento->valor_aplicado;
         $this->quantidade++;
 
         $this->save();
     }
+
     public function removerInvestimento($id)
     {
         $invest = $this->investimentos()->find($id);
@@ -54,7 +44,7 @@ class Carteira extends Model
             return false;
         }
 
-        $this->valor_total -= $invest->valorAplicado;
+        $this->valor_total -= $invest->valor_aplicado;
         $this->quantidade--;
 
         $this->save();
@@ -62,10 +52,11 @@ class Carteira extends Model
         $invest->delete();
         return true;
     }
+
     public function calcularRetornoTotal()
     {
         return $this->investimentos->sum(function ($inv) {
-            return $inv->valorAplicado * ($inv->retornoPercentual / 100);
+            return $inv->valor_aplicado * ($inv->retorno_percentual / 100);
         });
     }
 }

@@ -20,12 +20,5 @@ class InvestimentoFactory extends Factory
             //
         ];
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
-=======
-}
->>>>>>> origin/develop
+
