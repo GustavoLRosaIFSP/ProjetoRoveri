@@ -58,14 +58,25 @@ Route::middleware('auth')->group(function () {
     Route::resource('ativos', AtivoController::class);
 });
 
-Route::get('/investimentos/selecionar/{ativo}', [InvestimentoController::class, 'selecionarAtivo'])
-     ->name('investimentos.selecionar');
-
 Route::post('/carteira/remover/{id}', [CarteiraController::class, 'remover'])
     ->name('carteira.remover');
 
 Route::middleware('auth')->group(function () {
     Route::resource('usuarios', UsuarioController::class);
 });
+
+Route::get('/testar-alpha', function (AlphaVantageService $alpha) {
+    $tickers = ['PETR4', 'VALE3', 'ITUB4', 'BBAS3'];
+
+    return $alpha->getPrecos($tickers);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::resource('ativos', AtivoController::class);
+});
+
+Route::get('/investimentos/selecionar/{idAtivo}', 
+    [InvestimentoController::class, 'selecionarAtivo']
+)->name('investimentos.selecionar');
 
 require __DIR__.'/auth.php';

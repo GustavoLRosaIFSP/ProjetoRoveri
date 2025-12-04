@@ -13,7 +13,10 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-
+    'alpha' => [
+        'base_url' => env('ALPHA_BASE_URL', 'https://www.alphavantage.co/query'),
+        'key' => env('ALPHA_KEY'),
+    ],
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
