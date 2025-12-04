@@ -10,7 +10,6 @@ class AtivoPolicy
 {
     public function before($user)
     {
-        // Se não for admin = negar tudo
         if ($user->categoria !== \App\Models\Enum\Categoria::ADMINISTRADOR) {
             return false;
         }

@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('categoria')->nullable(); 
             $table->string('risco')->nullable();
 
-            // Campos padrão do Breeze/User
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

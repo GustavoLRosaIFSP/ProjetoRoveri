@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>Dashboard - Dark Mode</title>
 
-    <!-- Tailwind via CDN (não precisa npm) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>

@@ -24,6 +24,12 @@
                         Ativos</a>
                     @endcan
 
+                    @can('create', App\Models\User::class)
+                        <a href="{{ route('usuarios.index') }}"
+                        class="text-purple-300 hover:text-purple-400 text-sm font-semibold transition">
+                        Usuarios</a>
+                    @endcan
+
                     <a href="{{ route('carteira.index') }}"
    class="text-purple-300 hover:text-purple-400 transition text-sm font-semibold">
    Minha carteira

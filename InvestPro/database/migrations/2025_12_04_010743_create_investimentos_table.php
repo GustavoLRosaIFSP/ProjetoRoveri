@@ -17,13 +17,12 @@ return new class extends Migration
             $table->foreignId('carteira_id')->constrained('carteiras')->onDelete('cascade');
             $table->foreignId('ativo_id')->constrained('ativos')->onDelete('cascade');
 
-            // Snapshot completo do ativo
             $table->string('snapshot_nome');
             $table->string('snapshot_ticker');
             $table->double('snapshot_preco');
             $table->string('snapshot_tipo');
             $table->integer('quantidade');
-            // Dados do investimento
+
             $table->double('valor_aplicado');
             $table->date('data_inicio');
             $table->date('data_fim')->nullable();

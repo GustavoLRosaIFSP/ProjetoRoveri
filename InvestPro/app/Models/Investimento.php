@@ -46,6 +46,11 @@ class Investimento extends Model
 
         return $this->valor_aplicado * ($percentual / 100);
     }
+
+    public function ativo()
+    {
+        return $this->belongsTo(Ativo::class, 'ativo_id');
+    }
 }
 
 ?>

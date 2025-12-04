@@ -17,7 +17,6 @@ class CarteiraController extends Controller
             ->where('user_id', auth()->id())
             ->first();
 
-        // Cria a carteira caso o usuário ainda não tenha uma
         if (!$carteira) {
             $carteira = Carteira::create([
                 'user_id'      => auth()->id(),
@@ -45,12 +44,10 @@ class CarteiraController extends Controller
 
         $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
-        // Cria investimento
         $investimento = new Investimento($request->all());
         $investimento->carteira_id = $carteira->id;
         $investimento->save();
 
-        // Atualiza carteira
         $carteira->valor_total += $investimento->valorAplicado;
         $carteira->quantidade += 1;
         $carteira->save();
@@ -69,12 +66,11 @@ class CarteiraController extends Controller
             ->where('carteira_id', $carteira->id)
             ->firstOrFail();
 
-        // Atualiza carteira
+
         $carteira->valor_total -= $investimento->valorAplicado;
         $carteira->quantidade -= 1;
         $carteira->save();
 
-        // Remove investimento
         $investimento->delete();
 
         return back()->with('success', 'Investimento removido com sucesso!');

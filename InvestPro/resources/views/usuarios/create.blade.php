@@ -31,22 +31,24 @@
 
                     <div>
                         <label class="text-purple-200">Categoria</label>
-                        <select id="categoria"
+                        <select name="categoria"
                             class="w-full mt-1 bg-black border border-purple-700 text-purple-200 rounded-lg p-2">
-                            <option value="Agressivo">Agressivo</option>
-                            <option value="Moderado">Moderado</option>
-                            <option value="Conservador">Conservador</option>
+                            @foreach(\App\Models\Enum\Categoria::cases() as $categoria)
+                                <option value="{{ $categoria->value }}">{{ $categoria->label() }}</option>
+                            @endforeach
                         </select>
+                        <x-input-error :messages="$errors->get('categoria')" class="mt-2 text-red-400" />
                     </div>
 
                     <div>
-                        <label class="text-purple-200">Risco</label>
-                        <select id="risco"
+                        <label class="text-purple-200">Perfil de Risco</label>
+                        <select name="risco"
                             class="w-full mt-1 bg-black border border-purple-700 text-purple-200 rounded-lg p-2">
-                            <option value="Alto">Alto</option>
-                            <option value="Médio">Médio</option>
-                            <option value="Baixo">Baixo</option>
+                            @foreach(\App\Models\Enum\Risco::cases() as $risco)
+                                <option value="{{ $risco->value }}">{{ $risco->label() }}</option>
+                            @endforeach
                         </select>
+                        <x-input-error :messages="$errors->get('risco')" class="mt-2 text-red-400" />
                     </div>
 
                     <button type="button" onclick="salvarUsuario()"

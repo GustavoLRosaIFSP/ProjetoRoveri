@@ -30,3 +30,24 @@ body {
     box-shadow: 0 0 12px #5a00ff, 0 0 20px #009dff;
     transform: scale(1.03);
 }
+
+/* Adicione isso ao seu app.css ou tailwind.css */
+@layer components {
+    .glass-card {
+        @apply bg-gradient-to-br from-gray-900/80 to-gray-800/80 backdrop-blur-lg border border-gray-700;
+    }
+    
+    .metric-card {
+        @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-xl;
+    }
+}
+
+/* Animações suaves */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

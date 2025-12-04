@@ -32,7 +32,6 @@ class User extends Authenticatable
         'password'          => 'hashed',
         'criado_em'         => 'datetime',
         'status'            => 'boolean',
-
         'categoria'         => Categoria::class,
         'risco'             => Risco::class,
     ];
