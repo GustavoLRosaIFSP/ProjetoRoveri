@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Investimento extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'carteira_id',
         'ativo_id',
@@ -22,9 +20,24 @@ class Investimento extends Model
         'data_fim',
     ];
 
-    public function ativo()
+    public function getId()
     {
-        return $this->belongsTo(Ativo::class);
+        return $this->id;
+    }
+
+    public function setId(int $id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getValorAplicado(){
+        return $this->valorAplicado;
+    }
+
+    public function setValorAplicado(double $valorAplicado){
+        $this->valorAplicado = $valorAplicado;
+        return $this;
     }
 
     public function getRendimentoMensalAttribute()
