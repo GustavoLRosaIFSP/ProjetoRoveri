@@ -15,12 +15,18 @@ class Carteira extends Model
         'quantidade',
         'user_id'
     ];
+<<<<<<< HEAD
 
+=======
+>>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
     public function investimentos()
     {
         return $this->hasMany(Investimento::class);
