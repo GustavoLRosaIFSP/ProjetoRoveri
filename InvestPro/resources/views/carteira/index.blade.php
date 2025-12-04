@@ -24,7 +24,44 @@
                 <strong>Valor Total:</strong>  
                 R$ {{ number_format($carteira->valor_total, 2, ',', '.') }}
             </p>
+            <div class="flex gap-4 mt-4">
 
+            <!-- ADICIONAR VALOR -->
+            <form action="{{ route('carteira.adicionarSaldo') }}" method="POST" class="flex gap-2">
+                @csrf
+                <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    name="valor"
+                    placeholder="Valor"
+                    required
+                    class="bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg w-32"
+                >
+
+                <button class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg">
+                    Depositar
+                </button>
+            </form>
+
+            <!-- SACAR -->
+            <form action="{{ route('carteira.sacarSaldo') }}" method="POST" class="flex gap-2">
+                @csrf
+                <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    name="valor"
+                    placeholder="Valor"
+                    required
+                    class="bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg w-32"
+                >
+
+                <button class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg">
+                    Sacar
+                </button>
+            </form>
+        </div>
             <p class="text-purple-300 text-lg">
                 <strong>Quantidade:</strong> 
                 {{ $carteira->investimentos->count() }}

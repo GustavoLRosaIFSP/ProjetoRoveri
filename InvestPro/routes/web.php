@@ -36,6 +36,11 @@ Route::middleware('auth')->group(function () {
         ->name('carteira.retorno');
     Route::get('/carteira/{id}/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
         ->name('carteiras.retorno');
+    Route::post('/carteira/adicionar-saldo', [CarteiraController::class, 'adicionarSaldo'])
+    ->name('carteira.adicionarSaldo');
+    Route::post('/carteira/sacar-saldo', [CarteiraController::class, 'sacarSaldo'])
+    ->name('carteira.sacarSaldo');
+
 
 });
 

@@ -103,5 +103,43 @@ class CarteiraController extends Controller
             'retorno_total'  => $carteira->calcularRetornoTotal()
         ]);
     }
+    /**
+     * Adicionar valor à carteira (DEPÓSITO)
+     */
+    public function adicionarSaldo(Request $request)
+    {
+        $request->validate([
+            'valor' => 'required|numeric|min:1'
+        ]);
+
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        $carteira->valor_total += $request->valor;
+        $carteira->save();
+
+        return back()->with('success', 'Valor adicionado com sucesso!');
+    }
+
+    /**
+     * Realizar saque da carteira
+     */
+    public function sacarSaldo(Request $request)
+    {
+        $request->validate([
+            'valor' => 'required|numeric|min:1'
+        ]);
+
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        if ($request->valor > $carteira->valor_total) {
+            return back()->with('error', 'Saldo insuficiente.');
+        }
+
+        $carteira->valor_total -= $request->valor;
+        $carteira->save();
+
+        return back()->with('success', 'Saque realizado com sucesso!');
+    }
+
 }
 
