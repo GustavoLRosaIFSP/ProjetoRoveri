@@ -11,26 +11,20 @@
             <form action="{{ route('investimentos.store') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <!-- Nome -->
+                <input type="hidden" name="ativo_id" value="{{ $ativo->id }}">
                 <div>
-                    <label class="block text-purple-300 mb-1 font-semibold">Nome</label>
-                    <input type="text" name="nome" required
-                           class="w-full bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg">
+                    <label class="text-purple-300 font-semibold">Ativo Selecionado</label>
+                    <input type="text" value="{{ $ativo->nome }} ({{ $ativo->codigo_ticker }})"
+                        class="w-full bg-gray-800 text-white p-2 rounded-lg"
+                        disabled>
                 </div>
 
-                <!-- Categoria -->
                 <div>
-                    <label class="block text-purple-300 mb-1 font-semibold">Categoria</label>
-                    <input type="text" name="categoria" required
-                           class="w-full bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg">
+                    <label class="block text-purple-300 mb-1 font-semibold">Valor Aplicado (R$)</label>
+                    <input type="number" name="valor_aplicado" step="0.01" required
+                        class="w-full bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg">
                 </div>
 
-                <!-- Rendimento -->
-                <div>
-                    <label class="block text-purple-300 mb-1 font-semibold">Rendimento (R$)</label>
-                    <input type="number" step="0.01" name="rendimento" required
-                           class="w-full bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg">
-                </div>
 
                 <div class="flex justify-end">
                     <button

@@ -9,10 +9,10 @@
             <!-- Nome -->
             <div class="mb-4">
                 <label class="text-purple-200">Nome</label>
-                <input type="text" name="name"
+                <input type="text" name="nome"
                     class="w-full mt-1 bg-black border border-purple-700 text-purple-200 rounded-lg p-2"
                     required autofocus />
-                <x-input-error :messages="$errors->get('name')" class="mt-2 text-red-400" />
+                <x-input-error :messages="$errors->get('nome')" class="mt-2 text-red-400" />
             </div>
 
             <!-- Email -->
@@ -22,6 +22,17 @@
                     class="w-full mt-1 bg-black border border-purple-700 text-purple-200 rounded-lg p-2"
                     required />
                 <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-400" />
+            </div>
+
+            <div class="mb-4">
+                <label class="text-purple-200">Perfil de Risco</label>
+                <select name="risco"
+                    class="w-full mt-1 bg-black border border-purple-700 text-purple-200 rounded-lg p-2">
+                    @foreach(\App\Models\Enum\Risco::cases() as $risco)
+                        <option value="{{ $risco->value }}">{{ $risco->label() }}</option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('risco')" class="mt-2 text-red-400" />
             </div>
 
             <!-- Senha -->

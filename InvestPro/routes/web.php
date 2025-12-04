@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvestimentoController;
+use App\Http\Controllers\AtivoController;
+use App\Http\Controllers\CarteiraController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,8 +28,25 @@ Route::middleware('auth')->group(function () {
     Route::resource('investimentos', InvestimentoController::class);
 });
 
+Route::middleware('auth')->group(function () {
+    Route::resource('carteira', CarteiraController::class);
+});
+
+Route::post('/carteira/nome', [CarteiraController::class, 'updateNome'])
+    ->name('carteira.updateNome');
+
 Route::get('/meu-perfil', function () {
     return view('profile.meu-perfil');
 })->middleware(['auth'])->name('meu-perfil');
+
+Route::middleware('auth')->group(function () {
+    Route::resource('ativos', AtivoController::class);
+});
+
+Route::get('/investimentos/selecionar/{ativo}', [InvestimentoController::class, 'selecionarAtivo'])
+     ->name('investimentos.selecionar');
+
+Route::post('/carteira/remover/{id}', [CarteiraController::class, 'remover'])
+    ->name('carteira.remover');
 
 require __DIR__.'/auth.php';

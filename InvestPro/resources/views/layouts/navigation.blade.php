@@ -17,11 +17,23 @@
                        class="text-purple-300 hover:text-purple-400 text-sm font-semibold transition">
                         Investimentos
                     </a>
+
+                    @can('create', App\Models\Ativo::class)
+                        <a href="{{ route('ativos.index') }}"
+                        class="text-purple-300 hover:text-purple-400 text-sm font-semibold transition">
+                        Ativos</a>
+                    @endcan
+
+                    <a href="{{ route('carteira.index') }}"
+   class="text-purple-300 hover:text-purple-400 transition text-sm font-semibold">
+   Minha carteira
+                    </a>
+
                     <a href="{{ route('meu-perfil') }}"
    class="text-purple-300 hover:text-purple-400 transition text-sm font-semibold">
    Meu Perfil
                     </a>
-
+                    
                 </div>
             </div>
 

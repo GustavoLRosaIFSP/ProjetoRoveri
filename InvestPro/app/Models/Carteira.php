@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Carteira extends Usuario
+class Carteira extends Model
 {
     use HasFactory;
 
@@ -15,10 +15,12 @@ class Carteira extends Usuario
         'quantidade',
         'user_id'
     ];
+
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
     public function investimentos()
     {
         return $this->hasMany(Investimento::class);

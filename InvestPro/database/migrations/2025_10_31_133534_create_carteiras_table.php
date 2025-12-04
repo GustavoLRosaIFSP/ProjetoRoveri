@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('carteiras', function (Blueprint $table) {
             $table->id();
+            $table->string('nome');
+            $table->double('valor_total')->default(0);
+            $table->integer('quantidade')->default(0);
+            $table->double('rentabilidade')->default(0);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

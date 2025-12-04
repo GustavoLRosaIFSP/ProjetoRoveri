@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Investimento;
+use App\Models\Ativo;
+use App\Models\Carteira;
 use Illuminate\Http\Request;
 
 class InvestimentoController extends Controller
@@ -12,16 +14,20 @@ class InvestimentoController extends Controller
      */
     public function index()
     {
-        // Para API - retorna JSON
+        $usuario = auth()->user();
+        $riscoUsuario = $usuario->risco;
+
+        $ativos = Ativo::orderByRaw("CASE WHEN risco = ? THEN 0 ELSE 1 END", [$riscoUsuario])
+                    ->orderBy('nome', 'asc')
+                    ->get();
+
         if (request()->wantsJson()) {
-            $investimentos = Investimento::all();
-            return response()->json($investimentos);
+            return response()->json($ativos);
         }
-        
-        // Para Web - retorna view
-        $investimentos = Investimento::all();
-        return view('investimentos.index', compact('investimentos'));
+
+        return view('investimentos.index', compact('ativos'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -36,21 +42,40 @@ class InvestimentoController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'valorAplicado' => 'required|numeric|min:0',
-            'dataInicio' => 'required|date',
-            'dataFim' => 'nullable|date',
-            'retornoPercentual' => 'nullable|numeric',
+        $request->validate([
+            'ativo_id' => 'required|exists:ativos,id',
+            'valor_aplicado' => 'required|numeric|min:0.01',
         ]);
 
-        $investimento = Investimento::create($validated);
-        
-        if ($request->wantsJson()) {
-            return response()->json($investimento, 201);
-        }
-        
+        $ativo = Ativo::findOrFail($request->ativo_id);
+
+        $quantidade = $request->valor_aplicado / $ativo->preco_atual;
+
+        $carteira = Carteira::firstOrCreate(
+            ['user_id' => auth()->id()],
+            ['nome' => 'Minha Carteira', 'valor_total' => 0, 'quantidade' => 0]
+        );
+
+        Investimento::create([
+            'carteira_id' => $carteira->id,
+            'ativo_id' => $ativo->id,
+
+            'snapshot_nome' => $ativo->nome,
+            'snapshot_ticker' => $ativo->codigo_ticker,
+            'snapshot_preco' => $ativo->preco_atual,
+            'snapshot_tipo' => $ativo->tipo,
+
+            'valor_aplicado' => $request->valor_aplicado,
+            'quantidade' => $quantidade,
+            'data_inicio' => now(),
+        ]);
+
+        $carteira->valor_total += $request->valor_aplicado;
+        $carteira->quantidade += 1;  
+        $carteira->save();
+
         return redirect()->route('investimentos.index')
-            ->with('success', 'Investimento criado com sucesso!');
+                        ->with('success', 'Investimento criado com sucesso!');
     }
 
     /**
@@ -109,4 +134,10 @@ class InvestimentoController extends Controller
         return redirect()->route('investimentos.index')
             ->with('success', 'Investimento excluído com sucesso!');
     }
+
+    public function selecionarAtivo(Ativo $ativo)
+    {
+        return view('investimentos.create', compact('ativo'));
+    }
+
 }

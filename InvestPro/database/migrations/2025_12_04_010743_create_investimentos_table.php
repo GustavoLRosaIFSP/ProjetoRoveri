@@ -13,14 +13,26 @@ return new class extends Migration
     {
         Schema::create('investimentos', function (Blueprint $table) {
             $table->id();
-            $table->decimal('valor_aplicado', 15, 2);
+
+            $table->foreignId('carteira_id')->constrained('carteiras')->onDelete('cascade');
+            $table->foreignId('ativo_id')->constrained('ativos')->onDelete('cascade');
+
+            // Snapshot completo do ativo
+            $table->string('snapshot_nome');
+            $table->string('snapshot_ticker');
+            $table->double('snapshot_preco');
+            $table->string('snapshot_tipo');
+
+            // Dados do investimento
+            $table->double('valor_aplicado');
             $table->date('data_inicio');
             $table->date('data_fim')->nullable();
-            $table->decimal('retorno_percentual', 5, 2)->nullable();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->double('retorno_percentual')->default(0);
+
             $table->timestamps();
         });
-    }
+}
+
 
     /**
      * Reverse the migrations.
