@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
 });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Route::middleware('auth')->group(function () {
     Route::resource('investimentos', InvestimentoController::class);
 });
@@ -64,6 +65,8 @@ Route::get('/investimentos/selecionar/{ativo}', [InvestimentoController::class, 
 
 Route::post('/carteira/remover/{id}', [CarteiraController::class, 'remover'])
     ->name('carteira.remover');
+=======
+>>>>>>> origin/develop
 
 require __DIR__.'/auth.php';
 =======

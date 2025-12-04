@@ -10,6 +10,7 @@ class Ativo extends Model
 {
     protected $fillable = [
 <<<<<<< HEAD
+<<<<<<< HEAD
         'nome',
         'codigo_ticker',
         'preco_atual',
@@ -39,6 +40,8 @@ class Ativo extends Model
     }
 
 =======
+=======
+>>>>>>> origin/develop
         'nome', 
         'codigo_ticker',
         'preco_atual'
@@ -48,6 +51,9 @@ class Ativo extends Model
     {
         return $this->hasMany(Investimento::class);
     }
+<<<<<<< HEAD
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
 }
 

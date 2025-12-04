@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('carteiras', function (Blueprint $table) {
             $table->id();
 <<<<<<< HEAD
+<<<<<<< HEAD
             $table->string('nome');
             $table->double('valor_total')->default(0);
             $table->integer('quantidade')->default(0);
             $table->double('rentabilidade')->default(0);
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
 =======
+=======
+>>>>>>> origin/develop
 
             // Relacionamento com usuários
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
@@ -29,7 +32,10 @@ return new class extends Migration
             $table->decimal('valor_total', 10, 2)->default(0);
             $table->decimal('rentabilidade', 10, 2)->default(0);
 
+<<<<<<< HEAD
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
             $table->timestamps();
         });
     }

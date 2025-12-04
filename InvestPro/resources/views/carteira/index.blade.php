@@ -1,5 +1,6 @@
 <x-app-layout>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <div class="max-w-5xl mx-auto py-8">
 
         <h1 class="text-3xl font-bold text-purple-300 mb-4">Minha Carteira</h1>
@@ -65,6 +66,8 @@
         </div>
     </div>
 =======
+=======
+>>>>>>> origin/develop
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-purple-400 leading-tight">
             Minha Carteira
@@ -133,5 +136,8 @@
         </div>
     </div>
 
+<<<<<<< HEAD
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
 </x-app-layout>

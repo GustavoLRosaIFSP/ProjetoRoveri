@@ -16,17 +16,23 @@ class Carteira extends Model
         'user_id'
     ];
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
     public function usuario()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
     public function investimentos()
     {
         return $this->hasMany(Investimento::class);

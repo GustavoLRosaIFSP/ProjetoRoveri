@@ -11,6 +11,7 @@ class Investimento extends Model
 
     protected $fillable = [
 <<<<<<< HEAD
+<<<<<<< HEAD
         'carteira_id',
         'ativo_id',
         'snapshot_nome',
@@ -22,12 +23,17 @@ class Investimento extends Model
         'data_inicio',
         'data_fim',
 =======
+=======
+>>>>>>> origin/develop
         'valorAplicado',
         'dataInicio',
         'dataFim',
         'retornoPercentual',
         'ativo_id'
+<<<<<<< HEAD
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
     ];
 
     public function ativo()
@@ -35,6 +41,7 @@ class Investimento extends Model
         return $this->belongsTo(Ativo::class);
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     public function getRendimentoMensalAttribute()
     {
@@ -45,6 +52,8 @@ class Investimento extends Model
 
 =======
 >>>>>>> f29627458a52026712f774bfc900bc0edfe2e5a7
+=======
+>>>>>>> origin/develop
 }
 
 ?>
