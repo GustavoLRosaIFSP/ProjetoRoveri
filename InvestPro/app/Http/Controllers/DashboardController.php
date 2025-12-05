@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $saldoDisponivel = $carteira ? $carteira->valor_total : 0;
         $totalInvestido = $carteira ? $carteira->investimentos()->sum('valor_aplicado') : 0;
 
-        $patrimonioTotal =  $carteira ? $carteira->calcularRetornoTotal() : 0;
+        $patrimonioTotal =  $saldoDisponivel + $totalInvestido;
 
         $totalRetorno = 0;
         $investimentos = $carteira->investimentos()->with('ativo')->get();
@@ -74,6 +74,7 @@ class DashboardController extends Controller
         $performanceValores = [100, 105, 110, 108, 115, 118, 122, 125, 128, 132, 135, 140];
         
         return view('dashboard', [
+            'saldoDisponivel' => $saldoDisponivel,
             'patrimonioTotal' => $patrimonioTotal,
             'investimentoMes' => $investimentoMes,
             'operacoesMes' => $operacoesMes,
