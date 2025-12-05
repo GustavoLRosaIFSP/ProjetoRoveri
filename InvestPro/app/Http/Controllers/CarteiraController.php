@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class CarteiraController extends Controller
 {
-    /**
-     * Exibe a carteira do usuário logado.
-     */
     public function index()
     {
         $carteira = Carteira::with('investimentos')
@@ -30,9 +27,6 @@ class CarteiraController extends Controller
         return view('carteira.index', compact('carteira'));
     }
 
-    /**
-     * Adiciona um novo investimento à carteira.
-     */
     public function adicionarInvestimento(Request $request)
     {
         $request->validate([
@@ -76,9 +70,6 @@ class CarteiraController extends Controller
         return back()->with('success', 'Investimento removido com sucesso!');
     }
 
-    /**
-     * Atualiza o nome da carteira.
-     */
     public function updateNome(Request $request)
     {
         $request->validate([
@@ -90,10 +81,6 @@ class CarteiraController extends Controller
 
         return back()->with('success', 'Nome da carteira atualizado!');
     }
-
-    /**
-     * Retorna o valor de retorno total da carteira.
-     */
     public function calcularRetornoTotal()
     {
         $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
@@ -103,9 +90,7 @@ class CarteiraController extends Controller
             'retorno_total'  => $carteira->calcularRetornoTotal()
         ]);
     }
-    /**
-     * Adicionar valor à carteira (DEPÓSITO)
-     */
+
     public function adicionarSaldo(Request $request)
     {
         $request->validate([
@@ -120,9 +105,6 @@ class CarteiraController extends Controller
         return back()->with('success', 'Valor adicionado com sucesso!');
     }
 
-    /**
-     * Realizar saque da carteira
-     */
     public function sacarSaldo(Request $request)
     {
         $request->validate([

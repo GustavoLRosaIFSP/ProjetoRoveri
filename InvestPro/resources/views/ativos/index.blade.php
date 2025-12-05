@@ -28,6 +28,7 @@
                     <th>Ticker</th>
                     <th>Preço</th>
                     <th>Tipo</th>
+                    <th>Risco</th>
                     <th class="text-right">Ações</th>
                 </tr>
             </thead>
@@ -39,6 +40,7 @@
                     <td>{{ $a->codigo_ticker }}</td>
                     <td>R$ {{ number_format($a->preco_atual, 2, ',', '.') }}</td>
                     <td>{{ $a->tipo }}</td>
+                    <td>{{ $a->risco }}</td>
 
                     <td class="py-2 text-right flex justify-end gap-2">
 
