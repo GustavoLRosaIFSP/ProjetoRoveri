@@ -42,7 +42,7 @@
             </div>
 
             <div class="mb-4">
-                 <label class="block text-purple-300 mb-1">Risco</label>
+                <label class="block text-purple-300 mb-1">Risco</label>
                 <select name="risco" class="w-full bg-gray-800 text-white p-2 rounded-xl">
                     @foreach ($riscos as $r)
                         <option value="{{ $r->value }}" 

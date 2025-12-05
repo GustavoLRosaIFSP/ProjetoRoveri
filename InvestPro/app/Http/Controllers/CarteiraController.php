@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class CarteiraController extends Controller
 {
-    /**
-     * Exibe a carteira do usuário logado.
-     */
     public function index()
     {
         $carteira = Carteira::with('investimentos')
@@ -28,6 +25,28 @@ class CarteiraController extends Controller
         }
 
         return view('carteira.index', compact('carteira'));
+    }
+
+    public function adicionarInvestimento(Request $request)
+    {
+        $request->validate([
+            'nome'               => 'required|string|max:255',
+            'categoria'          => 'required|string|max:255',
+            'valorAplicado'      => 'required|numeric|min:1',
+            'retornoPercentual'  => 'required|numeric|min:0',
+        ]);
+
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        $investimento = new Investimento($request->all());
+        $investimento->carteira_id = $carteira->id;
+        $investimento->save();
+
+        $carteira->valor_total += $investimento->valorAplicado;
+        $carteira->quantidade += 1;
+        $carteira->save();
+
+        return back()->with('success', 'Investimento adicionado com sucesso!');
     }
 
     /**
@@ -51,10 +70,6 @@ class CarteiraController extends Controller
         return back()->with('success', 'Investimento removido com sucesso!');
     }
 
-
-    /**
-     * Atualiza o nome da carteira.
-     */
     public function updateNome(Request $request)
     {
         $request->validate([
@@ -66,16 +81,13 @@ class CarteiraController extends Controller
 
         return back()->with('success', 'Nome da carteira atualizado!');
     }
-
     public function calcularRetornoTotal()
     {
         return $this->investimentos->sum(function ($inv) {
             return $inv->valor_aplicado * ($inv->retorno_percentual / 100);
         });
     }
-    /**
-     * Adicionar valor à carteira (DEPÓSITO)
-     */
+
     public function adicionarSaldo(Request $request)
     {
         $request->validate([
@@ -90,9 +102,6 @@ class CarteiraController extends Controller
         return back()->with('success', 'Valor adicionado com sucesso!');
     }
 
-    /**
-     * Realizar saque da carteira
-     */
     public function sacarSaldo(Request $request)
     {
         $request->validate([
