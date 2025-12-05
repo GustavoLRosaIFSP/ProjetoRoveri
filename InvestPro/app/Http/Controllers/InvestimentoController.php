@@ -153,17 +153,16 @@ class InvestimentoController extends Controller
      * Selecionar ativo para criar investimento
      */
     public function selecionarAtivo($idAtivo)
-{
-    $ativo = Ativo::findOrFail($idAtivo);
+    {
+        $ativo = Ativo::findOrFail($idAtivo);
 
-    // carteira do usuário+
-    $carteira = auth()->user()->carteira;
+        $carteira = auth()->user()->carteira;
 
-    if (!$carteira) {
-        return redirect()->route('carteira.index')
-            ->withErrors('Você precisa criar uma carteira antes de investir.');
+        if (!$carteira) {
+            return redirect()->route('carteira.index')
+                ->withErrors('Você precisa criar uma carteira antes de investir.');
+        }
+
+        return view('investimentos.create', compact('ativo', 'carteira'));
     }
-
-    return view('investimentos.create', compact('ativo', 'carteira'));
-}
 }
