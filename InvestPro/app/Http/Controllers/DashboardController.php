@@ -15,30 +15,36 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $carteira = $user->carteira;
-        
-        $saldoDisponivel = $carteira ? $carteira->valor_total : 0;
-        $totalInvestido = $carteira ? $carteira->investimentos()->sum('valor_aplicado') : 0;
 
-        $patrimonioTotal =  $saldoDisponivel + $totalInvestido;
-
+        $saldoDisponivel = 0;
+        $totalInvestido = 0;
+        $patrimonioTotal = 0;
         $totalRetorno = 0;
-        $investimentos = $carteira->investimentos()->with('ativo')->get();
+        $rendimentoTotal = 0;
 
-        foreach ($investimentos as $investimento) {
-            $percentual = $investimento->ativo->rendimento_percentual ?? 0;
-            $retorno = $investimento->valor_aplicado * ($percentual / 100);
-            $totalRetorno += $retorno;
+        if ($carteira) {
+            $saldoDisponivel = $carteira->valor_total;
+            $totalInvestido = $carteira->investimentos()->sum('valor_aplicado');
+            $patrimonioTotal = $saldoDisponivel + $totalInvestido;
+
+            $investimentos = $carteira->investimentos()->with('ativo')->get();
+            
+            foreach ($investimentos as $investimento) {
+                $percentual = $investimento->ativo->rendimento_percentual ?? 0;
+                $retorno = $investimento->valor_aplicado * ($percentual / 100);
+                $totalRetorno += $retorno;
+            }
+            
+            $rendimentoTotal = $totalRetorno;
         }
-
-        $rendimentoTotal = $totalRetorno;
-
+        
         $inicioMes = Carbon::now()->startOfMonth();
-        $carteiraId = $user->carteira->id ?? null;
+        $carteiraId = $carteira ? $carteira->id : null;
 
         if ($carteiraId) {
             $investimentoMes = Investimento::where('carteira_id', $carteiraId)
                 ->where('created_at', '>=', $inicioMes)
-                ->sum('valor_aplicado');
+                ->sum('valor_aplicado') ?? 0;
             
             $operacoesMes = Investimento::where('carteira_id', $carteiraId)
                 ->where('created_at', '>=', $inicioMes)
@@ -69,13 +75,13 @@ class DashboardController extends Controller
             $ultimosInvestimentos = collect();
         }
         
-        
         $performanceLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
         $performanceValores = [100, 105, 110, 108, 115, 118, 122, 125, 128, 132, 135, 140];
         
         return view('dashboard', [
             'saldoDisponivel' => $saldoDisponivel,
             'patrimonioTotal' => $patrimonioTotal,
+            'rendimentoTotal' => $rendimentoTotal,
             'investimentoMes' => $investimentoMes,
             'operacoesMes' => $operacoesMes,
             'ativosDistintos' => $ativosDistintos,
@@ -86,7 +92,6 @@ class DashboardController extends Controller
             'performanceLabels' => $performanceLabels,
             'performanceValores' => $performanceValores,
             'ultimosInvestimentos' => $ultimosInvestimentos,
-            'rendimentoTotal' => $rendimentoTotal,
         ]);
     }
     
