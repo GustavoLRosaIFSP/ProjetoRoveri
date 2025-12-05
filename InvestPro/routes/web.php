@@ -67,9 +67,6 @@ Route::get('/testar-alpha', function (AlphaVantageService $alpha) {
     return $alpha->getPrecos($tickers);
 });
 
-Route::middleware('auth')->group(function () {
-    Route::resource('ativos', AtivoController::class);
-});
 
 Route::get('/investimentos/selecionar/{idAtivo}', 
     [InvestimentoController::class, 'selecionarAtivo']
