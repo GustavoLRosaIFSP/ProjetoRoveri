@@ -103,8 +103,15 @@ class AtivoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Ativo $ativo)
     {
-        //
+        $ativo->delete();
+
+        if (request()->wantsJson()) {
+            return response()->json(['message' => 'Ativo excluído com sucesso']);
+        }
+
+        return redirect()->route('ativos.index')
+            ->with('success', 'Ativo excluído com sucesso!');
     }
 }
