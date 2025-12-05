@@ -36,7 +36,7 @@ class Investimento extends Model
         return $this->valorAplicado;
     }
 
-    public function setValorAplicado(double $valorAplicado){
+    public function setValorAplicado($valorAplicado){
         $this->valorAplicado = $valorAplicado;
         return $this;
     }
