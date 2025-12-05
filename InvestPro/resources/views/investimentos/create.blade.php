@@ -1,7 +1,6 @@
 <x-app-layout>
     <div class="max-w-4xl mx-auto py-8">
-        <a href="{{ route('investimentos.index') }}"
-           class="text-purple-400 hover:text-purple-300 transition">
+        <a href="{{ route('investimentos.index') }}" class="text-purple-400 hover:text-purple-300 transition">
             ← Voltar
         </a>
 
@@ -12,20 +11,28 @@
                 @csrf
 
                 <input type="hidden" name="ativo_id" value="{{ $ativo->id }}">
+
                 <div>
                     <label class="text-purple-300 font-semibold">Ativo Selecionado</label>
                     <input type="text" value="{{ $ativo->nome }} ({{ $ativo->codigo_ticker }})"
-                        class="w-full bg-gray-800 text-white p-2 rounded-lg"
-                        disabled>
+                        class="w-full bg-gray-800 text-white p-2 rounded-lg" disabled>
                 </div>
 
                 <div>
                     <label class="block text-purple-300 mb-1 font-semibold">Valor Aplicado (R$)</label>
-                    <input type="number" name="valor_aplicado" step="0.01" required
+
+                    <input type="number" name="valor_aplicado" step="0.01" min="0.01" max="{{ $carteira->valor_total }}"
+                        value="{{ old('valor_aplicado') }}"
                         class="w-full bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg">
+
+                    @error('valor_aplicado')
+                        <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+
+                    <p class="text-sm text-gray-400 mt-2">
+                        Saldo disponível: <strong>R$ {{ number_format($carteira->valor_total, 2, ',', '.') }}</strong>
+                    </p>
                 </div>
-
-
                 <div class="flex justify-end">
                     <button
                         class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-lg shadow-lg transition">

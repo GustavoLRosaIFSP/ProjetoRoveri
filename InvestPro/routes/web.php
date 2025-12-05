@@ -27,24 +27,23 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/carteira', [CarteiraController::class, 'index'])
         ->name('carteira.index');
-    Route::post('/carteira/investimentos/adicionar', [CarteiraController::class, 'adicionarInvestimento'])
-        ->name('carteira.investimentos.add');
 
-    Route::delete('/carteira/investimentos/{idInvest}/remover', [CarteiraController::class, 'removerInvestimento'])
-        ->name('carteira.investimentos.remove');
+    Route::delete('/carteira/investimentos/remover', [CarteiraController::class, 'removerInvestimento'])
+        ->name('carteira.investimentos.destroy');
     Route::get('/carteira/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
         ->name('carteira.retorno');
     Route::get('/carteira/{id}/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
         ->name('carteiras.retorno');
+    Route::post('/carteira/adicionar-saldo', [CarteiraController::class, 'adicionarSaldo'])
+    ->name('carteira.adicionarSaldo');
+    Route::post('/carteira/sacar-saldo', [CarteiraController::class, 'sacarSaldo'])
+    ->name('carteira.sacarSaldo');
+
 
 });
 
 Route::middleware('auth')->group(function () {
     Route::resource('investimentos', InvestimentoController::class);
-});
-
-Route::middleware('auth')->group(function () {
-    Route::resource('carteira', CarteiraController::class);
 });
 
 Route::post('/carteira/nome', [CarteiraController::class, 'updateNome'])
@@ -58,14 +57,22 @@ Route::middleware('auth')->group(function () {
     Route::resource('ativos', AtivoController::class);
 });
 
-Route::get('/investimentos/selecionar/{ativo}', [InvestimentoController::class, 'selecionarAtivo'])
-     ->name('investimentos.selecionar');
-
-Route::post('/carteira/remover/{id}', [CarteiraController::class, 'remover'])
-    ->name('carteira.remover');
-
 Route::middleware('auth')->group(function () {
     Route::resource('usuarios', UsuarioController::class);
 });
+
+Route::get('/testar-alpha', function (AlphaVantageService $alpha) {
+    $tickers = ['PETR4', 'VALE3', 'ITUB4', 'BBAS3'];
+
+    return $alpha->getPrecos($tickers);
+});
+
+Route::middleware('auth')->group(function () {
+    Route::resource('ativos', AtivoController::class);
+});
+
+Route::get('/investimentos/selecionar/{idAtivo}', 
+    [InvestimentoController::class, 'selecionarAtivo']
+)->name('investimentos.selecionar');
 
 require __DIR__.'/auth.php';

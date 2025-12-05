@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class CarteiraController extends Controller
 {
-    /**
-     * Exibe a carteira do usuário logado.
-     */
     public function index()
     {
         $carteira = Carteira::with('investimentos')
@@ -30,9 +27,6 @@ class CarteiraController extends Controller
         return view('carteira.index', compact('carteira'));
     }
 
-    /**
-     * Adiciona um novo investimento à carteira.
-     */
     public function adicionarInvestimento(Request $request)
     {
         $request->validate([
@@ -58,16 +52,16 @@ class CarteiraController extends Controller
     /**
      * Remove investimento da carteira.
      */
-    public function removerInvestimento($idInvest)
+    public function removerInvestimento(Request $request)
     {
         $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
-        $investimento = Investimento::where('id', $idInvest)
+        $investimento = Investimento::where('id', $request->idInvest)
             ->where('carteira_id', $carteira->id)
             ->firstOrFail();
 
+        $carteira->valor_total += $investimento->valor_aplicado;
 
-        $carteira->valor_total -= $investimento->valorAplicado;
         $carteira->quantidade -= 1;
         $carteira->save();
 
@@ -76,9 +70,6 @@ class CarteiraController extends Controller
         return back()->with('success', 'Investimento removido com sucesso!');
     }
 
-    /**
-     * Atualiza o nome da carteira.
-     */
     public function updateNome(Request $request)
     {
         $request->validate([
@@ -90,18 +81,45 @@ class CarteiraController extends Controller
 
         return back()->with('success', 'Nome da carteira atualizado!');
     }
-
-    /**
-     * Retorna o valor de retorno total da carteira.
-     */
     public function calcularRetornoTotal()
     {
+        return $this->investimentos->sum(function ($inv) {
+            return $inv->valor_aplicado * ($inv->retorno_percentual / 100);
+        });
+    }
+
+    public function adicionarSaldo(Request $request)
+    {
+        $request->validate([
+            'valor' => 'required|numeric|min:1'
+        ]);
+
         $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
-        return response()->json([
-            'carteira_id'    => $carteira->id,
-            'retorno_total'  => $carteira->calcularRetornoTotal()
-        ]);
+        $carteira->valor_total += $request->valor;
+        $carteira->save();
+
+        return back()->with('success', 'Valor adicionado com sucesso!');
     }
+
+    public function sacarSaldo(Request $request)
+    {
+        $request->validate([
+            'valor' => 'required|numeric|min:1'
+        ]);
+
+        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
+
+        if ($request->valor > $carteira->valor_total) {
+            return back()->with('error', 'Saldo insuficiente.');
+        }
+
+        $carteira->valor_total -= $request->valor;
+        $carteira->save();
+
+        return back()->with('success', 'Saque realizado com sucesso!');
+    }
+
+
 }
 

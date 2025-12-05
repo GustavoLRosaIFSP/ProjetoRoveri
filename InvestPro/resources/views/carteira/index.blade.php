@@ -24,7 +24,44 @@
                 <strong>Valor Total:</strong>  
                 R$ {{ number_format($carteira->valor_total, 2, ',', '.') }}
             </p>
+            <div class="flex gap-4 mt-4">
 
+            <!-- ADICIONAR VALOR -->
+            <form action="{{ route('carteira.adicionarSaldo') }}" method="POST" class="flex gap-2">
+                @csrf
+                <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    name="valor"
+                    placeholder="Valor"
+                    required
+                    class="bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg w-32"
+                >
+
+                <button class="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg">
+                    Depositar
+                </button>
+            </form>
+
+            <!-- SACAR -->
+            <form action="{{ route('carteira.sacarSaldo') }}" method="POST" class="flex gap-2">
+                @csrf
+                <input
+                    type="number"
+                    step="0.01"
+                    min="1"
+                    name="valor"
+                    placeholder="Valor"
+                    required
+                    class="bg-gray-800 border border-purple-700/40 text-white p-2 rounded-lg w-32"
+                >
+
+                <button class="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg">
+                    Sacar
+                </button>
+            </form>
+        </div>
             <p class="text-purple-300 text-lg">
                 <strong>Quantidade:</strong> 
                 {{ $carteira->investimentos->count() }}
@@ -38,7 +75,7 @@
                 <thead>
                     <tr class="border-b border-purple-700/40">
                         <th class="p-2">Nome</th>
-                        <th class="p-2">Categoria</th>
+                        <th class="p-2">Tipo</th>
                         <th class="p-2">Aplicado</th>
                         <th class="p-2">Retorno (%)</th>
                         <th class="p-2 text-center">Ações</th>
@@ -48,18 +85,24 @@
                 <tbody>
                     @forelse ($carteira->investimentos as $inv)
                         <tr class="border-b border-purple-700/20">
-                            <td class="p-2">{{ $inv->nome }}</td>
-                            <td class="p-2">{{ $inv->categoria }}</td>
+                            <td class="p-2">{{ $inv->snapshot_nome }}</td>
+                            <td class="p-2">{{ $inv->snapshot_tipo }}</td>
 
                             <td class="p-2">
                                 R$ {{ number_format($inv->valor_aplicado, 2, ',', '.') }}
                             </td>
 
-                            <td class="p-2">{{ $inv->retorno_percentual }}%</td>
+                            <td class="p-2">
+                                {{ $inv->retorno_percentual ?? 0 }}%
+                            </td>
 
                             <td class="p-2 text-center">
-                                <form action="{{ route('carteira.remover', $inv->id) }}" method="POST">
+                                <form action="{{ route('carteira.investimentos.destroy') }}" method="POST">
                                     @csrf
+                                    @method('DELETE')
+
+                                    <input type="hidden" name="idInvest" value="{{ $inv->id }}">
+
                                     <button class="text-red-400 hover:text-red-300">
                                         Remover
                                     </button>
@@ -73,7 +116,7 @@
                             </td>
                         </tr>
                     @endforelse
-                </tbody>
+                    </tbody>
 
             </table>
         </div>

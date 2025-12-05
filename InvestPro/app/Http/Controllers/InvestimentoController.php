@@ -19,8 +19,8 @@ class InvestimentoController extends Controller
         $riscoUsuario = $usuario->risco;
 
         $ativos = Ativo::orderByRaw("CASE WHEN risco = ? THEN 0 ELSE 1 END", [$riscoUsuario])
-                    ->orderBy('nome', 'asc')
-                    ->get();
+            ->orderBy('nome', 'asc')
+            ->get();
 
         if (request()->wantsJson()) {
             return response()->json($ativos);
@@ -49,34 +49,48 @@ class InvestimentoController extends Controller
 
         $ativo = Ativo::findOrFail($request->ativo_id);
 
-        $quantidade = $request->valor_aplicado / $ativo->preco_atual;
-
         $carteira = Carteira::firstOrCreate(
             ['user_id' => auth()->id()],
             ['nome' => 'Minha Carteira', 'valor_total' => 0, 'quantidade' => 0]
         );
 
+        if ($request->valor_aplicado > $carteira->valor_total) {
+            return back()
+                ->withErrors(['valor_aplicado' => 'Saldo insuficiente.'])
+                ->withInput();
+        }
+
+        $percentual = $ativo->rendimento_percentual;
+        $retornoValor = $request->valor_aplicado * ($percentual / 100);
+
+        $quantidade = $request->valor_aplicado / $ativo->preco_atual;
+
         Investimento::create([
-            'carteira_id'      => $carteira->id,
-            'ativo_id'         => $ativo->id,
+            'carteira_id' => $carteira->id,
+            'ativo_id' => $ativo->id,
 
-            'snapshot_nome'    => $ativo->nome,
-            'snapshot_ticker'  => $ativo->codigo_ticker,
-            'snapshot_preco'   => $ativo->preco_atual,
-            'snapshot_tipo'    => $ativo->tipo,
+            'snapshot_nome' => $ativo->nome,
+            'snapshot_ticker' => $ativo->codigo_ticker,
+            'snapshot_preco' => $ativo->preco_atual,
+            'snapshot_tipo' => $ativo->tipo,
 
-            'valor_aplicado'   => $request->valor_aplicado,
-            'quantidade'       => $quantidade,
-            'data_inicio'      => now(),
+            'valor_aplicado' => $request->valor_aplicado,
+            'quantidade' => $quantidade,
+            'data_inicio' => now(),
+
+            'retorno_percentual' => $percentual,
+            'retorno_valor' => $retornoValor,
         ]);
 
-        $carteira->valor_total += $request->valor_aplicado;
+        $carteira->valor_total -= $request->valor_aplicado;
         $carteira->quantidade += 1;
         $carteira->save();
 
         return redirect()->route('investimentos.index')
-                        ->with('success', 'Investimento criado com sucesso!');
+            ->with('success', 'Investimento criado com sucesso!');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -104,10 +118,10 @@ class InvestimentoController extends Controller
     public function update(Request $request, Investimento $investimento)
     {
         $validated = $request->validate([
-            'valorAplicado' => 'required|numeric|min:0',
-            'dataInicio' => 'required|date',
-            'dataFim' => 'nullable|date',
-            'retornoPercentual' => 'nullable|numeric',
+            'valor_aplicado' => 'required|numeric|min:0',
+            'data_inicio' => 'required|date',
+            'data_fim' => 'nullable|date',
+            'retorno_percentual' => 'nullable|numeric',
         ]);
 
         $investimento->update($validated);
@@ -138,8 +152,18 @@ class InvestimentoController extends Controller
     /**
      * Selecionar ativo para criar investimento
      */
-    public function selecionarAtivo(Ativo $ativo)
-    {
-        return view('investimentos.create', compact('ativo'));
+    public function selecionarAtivo($idAtivo)
+{
+    $ativo = Ativo::findOrFail($idAtivo);
+
+    // carteira do usuário+
+    $carteira = auth()->user()->carteira;
+
+    if (!$carteira) {
+        return redirect()->route('carteira.index')
+            ->withErrors('Você precisa criar uma carteira antes de investir.');
     }
+
+    return view('investimentos.create', compact('ativo', 'carteira'));
+}
 }

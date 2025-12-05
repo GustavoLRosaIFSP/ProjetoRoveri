@@ -23,40 +23,27 @@ class Carteira extends Model
 
     public function investimentos()
     {
-        return $this->hasMany(Investimento::class);
+        return $this->hasMany(Investimento::class, 'carteira_id');
     }
 
-    public function adicionarInvestimento(Investimento $investimento)
-    {
-        $this->investimentos()->save($investimento);
-
-        $this->valor_total += $investimento->valor_aplicado;
-        $this->quantidade++;
-
-        $this->save();
-    }
-
-    public function removerInvestimento($id)
-    {
-        $invest = $this->investimentos()->find($id);
-
-        if (!$invest) {
-            return false;
-        }
-
-        $this->valor_total -= $invest->valor_aplicado;
-        $this->quantidade--;
-
-        $this->save();
-
-        $invest->delete();
-        return true;
-    }
 
     public function calcularRetornoTotal()
     {
-        return $this->investimentos->sum(function ($inv) {
-            return $inv->valor_aplicado * ($inv->retorno_percentual / 100);
-        });
+        $totalInvestido = $this->investimentos()->sum('valor_aplicado');
+        $valorAtual = $this->valor_total;
+        
+        return $valorAtual - $totalInvestido;
+    }
+
+    public function calcularRetornoPercentual()
+    {
+        $totalInvestido = $this->investimentos()->sum('valor_aplicado');
+        
+        if ($totalInvestido <= 0) {
+            return 0;
+        }
+        
+        $retornoTotal = $this->calcularRetornoTotal();
+        return ($retornoTotal / $totalInvestido) * 100;
     }
 }

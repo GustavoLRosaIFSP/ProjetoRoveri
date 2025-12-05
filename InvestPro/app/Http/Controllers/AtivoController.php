@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+new \App\Service\AlphaVantageService();
 
 use App\Models\Ativo;
 use App\Models\Enum\Tipo;
@@ -54,6 +55,7 @@ class AtivoController extends Controller
     }
 
 
+
     /**
      * Display the specified resource.
      */
@@ -96,6 +98,7 @@ class AtivoController extends Controller
     }
 
 
+    
 
     /**
      * Remove the specified resource from storage.

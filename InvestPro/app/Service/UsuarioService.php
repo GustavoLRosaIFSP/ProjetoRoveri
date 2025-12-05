@@ -27,7 +27,7 @@ class UsuarioService
     public function criar(array $data)
     {   
         if($this->repository->buscarEmail($data['email'])){
-            throw new \Exception("Email já cadastrado")
+            throw new \Exception("Email já cadastrado");
         }
         $data['senha'] = Hash::make($data['senha']);
         return $this->repository->create($data);
