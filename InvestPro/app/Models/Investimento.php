@@ -18,6 +18,7 @@ class Investimento extends Model
         'quantidade',
         'data_inicio',
         'data_fim',
+        'retorno_percentual',
     ];
 
     public function getId()
@@ -51,6 +52,17 @@ class Investimento extends Model
     {
         return $this->belongsTo(Ativo::class, 'ativo_id');
     }
+
+    public function rendimentoPercentual()
+    {
+        return $this->ativo->rendimento_percentual;
+    }
+
+    public function rendimentoMonetario()
+    {
+        return $this->valor_aplicado * ($this->rendimentoPercentual() / 100);
+    }
+
 }
 
 ?>

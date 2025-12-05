@@ -27,11 +27,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/carteira', [CarteiraController::class, 'index'])
         ->name('carteira.index');
-    Route::post('/carteira/investimentos/adicionar', [CarteiraController::class, 'adicionarInvestimento'])
-        ->name('carteira.investimentos.add');
 
-    Route::delete('/carteira/investimentos/{idInvest}/remover', [CarteiraController::class, 'removerInvestimento'])
-        ->name('carteira.investimentos.remove');
+    Route::delete('/carteira/investimentos/remover', [CarteiraController::class, 'removerInvestimento'])
+        ->name('carteira.investimentos.destroy');
     Route::get('/carteira/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
         ->name('carteira.retorno');
     Route::get('/carteira/{id}/retorno', [CarteiraController::class, 'calcularRetornoTotal'])
@@ -48,10 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('investimentos', InvestimentoController::class);
 });
 
-Route::middleware('auth')->group(function () {
-    Route::resource('carteira', CarteiraController::class);
-});
-
 Route::post('/carteira/nome', [CarteiraController::class, 'updateNome'])
     ->name('carteira.updateNome');
 
@@ -62,9 +56,6 @@ Route::get('/meu-perfil', function () {
 Route::middleware('auth')->group(function () {
     Route::resource('ativos', AtivoController::class);
 });
-
-Route::post('/carteira/remover/{id}', [CarteiraController::class, 'remover'])
-    ->name('carteira.remover');
 
 Route::middleware('auth')->group(function () {
     Route::resource('usuarios', UsuarioController::class);

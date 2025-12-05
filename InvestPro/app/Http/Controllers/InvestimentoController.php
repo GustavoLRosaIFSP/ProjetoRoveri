@@ -60,6 +60,9 @@ class InvestimentoController extends Controller
                 ->withInput();
         }
 
+        $percentual = $ativo->rendimento_percentual;
+        $retornoValor = $request->valor_aplicado * ($percentual / 100);
+
         $quantidade = $request->valor_aplicado / $ativo->preco_atual;
 
         Investimento::create([
@@ -74,15 +77,19 @@ class InvestimentoController extends Controller
             'valor_aplicado' => $request->valor_aplicado,
             'quantidade' => $quantidade,
             'data_inicio' => now(),
+
+            'retorno_percentual' => $percentual,
+            'retorno_valor' => $retornoValor,
         ]);
 
-        $carteira->valor_total += $request->valor_aplicado;
+        $carteira->valor_total -= $request->valor_aplicado;
         $carteira->quantidade += 1;
         $carteira->save();
 
         return redirect()->route('investimentos.index')
             ->with('success', 'Investimento criado com sucesso!');
     }
+
 
 
     /**

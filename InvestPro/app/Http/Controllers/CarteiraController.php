@@ -31,43 +31,18 @@ class CarteiraController extends Controller
     }
 
     /**
-     * Adiciona um novo investimento à carteira.
-     */
-    public function adicionarInvestimento(Request $request)
-    {
-        $request->validate([
-            'nome'               => 'required|string|max:255',
-            'categoria'          => 'required|string|max:255',
-            'valorAplicado'      => 'required|numeric|min:1',
-            'retornoPercentual'  => 'required|numeric|min:0',
-        ]);
-
-        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
-
-        $investimento = new Investimento($request->all());
-        $investimento->carteira_id = $carteira->id;
-        $investimento->save();
-
-        $carteira->valor_total += $investimento->valorAplicado;
-        $carteira->quantidade += 1;
-        $carteira->save();
-
-        return back()->with('success', 'Investimento adicionado com sucesso!');
-    }
-
-    /**
      * Remove investimento da carteira.
      */
-    public function removerInvestimento($idInvest)
+    public function removerInvestimento(Request $request)
     {
         $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
 
-        $investimento = Investimento::where('id', $idInvest)
+        $investimento = Investimento::where('id', $request->idInvest)
             ->where('carteira_id', $carteira->id)
             ->firstOrFail();
 
+        $carteira->valor_total += $investimento->valor_aplicado;
 
-        $carteira->valor_total -= $investimento->valorAplicado;
         $carteira->quantidade -= 1;
         $carteira->save();
 
@@ -75,6 +50,7 @@ class CarteiraController extends Controller
 
         return back()->with('success', 'Investimento removido com sucesso!');
     }
+
 
     /**
      * Atualiza o nome da carteira.
@@ -91,17 +67,11 @@ class CarteiraController extends Controller
         return back()->with('success', 'Nome da carteira atualizado!');
     }
 
-    /**
-     * Retorna o valor de retorno total da carteira.
-     */
     public function calcularRetornoTotal()
     {
-        $carteira = Carteira::where('user_id', auth()->id())->firstOrFail();
-
-        return response()->json([
-            'carteira_id'    => $carteira->id,
-            'retorno_total'  => $carteira->calcularRetornoTotal()
-        ]);
+        return $this->investimentos->sum(function ($inv) {
+            return $inv->valor_aplicado * ($inv->retorno_percentual / 100);
+        });
     }
     /**
      * Adicionar valor à carteira (DEPÓSITO)
@@ -140,6 +110,7 @@ class CarteiraController extends Controller
 
         return back()->with('success', 'Saque realizado com sucesso!');
     }
+
 
 }
 

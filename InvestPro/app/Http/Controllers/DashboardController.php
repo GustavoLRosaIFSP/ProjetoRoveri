@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\CarteiraController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Carteira;
 use App\Models\Investimento;
@@ -14,13 +15,23 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $carteira = $user->carteira;
-
-        $patrimonioTotal = $carteira ? $carteira->valor_total : 0;
-
-        $rendimentoTotal = $carteira ? $carteira->calcularRetornoTotal() : 0;
-
-        $rentabilidadePercentual = $patrimonioTotal > 0 ? ($rendimentoTotal / $patrimonioTotal) * 100 : 0;
         
+        $saldoDisponivel = $carteira ? $carteira->valor_total : 0;
+        $totalInvestido = $carteira ? $carteira->investimentos()->sum('valor_aplicado') : 0;
+
+        $patrimonioTotal =  $carteira ? $carteira->calcularRetornoTotal() : 0;
+
+        $totalRetorno = 0;
+        $investimentos = $carteira->investimentos()->with('ativo')->get();
+
+        foreach ($investimentos as $investimento) {
+            $percentual = $investimento->ativo->rendimento_percentual ?? 0;
+            $retorno = $investimento->valor_aplicado * ($percentual / 100);
+            $totalRetorno += $retorno;
+        }
+
+        $rendimentoTotal = $totalRetorno;
+
         $inicioMes = Carbon::now()->startOfMonth();
         $carteiraId = $user->carteira->id ?? null;
 
@@ -64,7 +75,6 @@ class DashboardController extends Controller
         
         return view('dashboard', [
             'patrimonioTotal' => $patrimonioTotal,
-            'rentabilidadePercentual' => $rentabilidadePercentual,
             'investimentoMes' => $investimentoMes,
             'operacoesMes' => $operacoesMes,
             'ativosDistintos' => $ativosDistintos,
@@ -89,33 +99,47 @@ class DashboardController extends Controller
             
         $labels = [];
         $valores = [];
-        $cores = [
+        $cores = [];
+        
+        $coresConfig = [
             'ACAO' => '#4F46E5',
             'FII' => '#10B981',
             'RENDA_FIXA' => '#F59E0B',
             'CRIPTO' => '#EF4444',
+            'ETF' => '#3B82F6', // Adicione mais cores se necessário
+            'BDR' => '#8B5CF6',
         ];
         
         foreach ($alocacao as $item) {
             $labels[] = $this->formatarTipo($item->tipo);
-            $valores[] = $item->total;
+            $valores[] = (float) $item->total;
+            $cores[] = $coresConfig[$item->tipo] ?? $this->gerarCorAleatoria($item->tipo);
         }
         
         return [
             'labels' => $labels,
             'valores' => $valores,
-            'cores' => array_values($cores)
+            'cores' => $cores
         ];
     }
 
-    private function formatarTipo($tipo)
+    private function gerarCorAleatoria($tipo)
+    {
+        $cores = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899'];
+        return $cores[crc32($tipo) % count($cores)];
+    }
+
+    private function formatarTipo(string $tipo)
     {
         return match($tipo) {
             'ACAO' => 'Ações',
             'FII' => 'Fundos',
             'RENDA_FIXA' => 'Renda Fixa',
             'CRIPTO' => 'Criptomoedas',
+            'ETF' => 'ETF',
             default => $tipo
         };
     }
+
+
 }

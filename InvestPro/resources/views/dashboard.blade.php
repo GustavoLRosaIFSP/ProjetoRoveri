@@ -18,35 +18,10 @@
                         <div>
                             <p class="text-gray-400 text-sm font-medium">Patrimônio Total</p>
                             <p class="text-2xl font-bold text-white mt-2">R$ {{ number_format($patrimonioTotal, 2, ',', '.') }}</p>
-                            <div class="flex items-center mt-3">
-                                <span class="inline-flex items-center text-green-400 text-sm font-medium">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-                                    </svg>
-                                    +12.5%
-                                </span>
-                                <span class="text-gray-500 text-xs ml-2">vs mês anterior</span>
-                            </div>
                         </div>
                         <div class="p-3 bg-purple-900/30 rounded-xl">
                             <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Rentabilidade --}}
-                <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 hover:border-green-500 transition duration-300">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-gray-400 text-sm font-medium">Rentabilidade</p>
-                            <p class="text-2xl font-bold text-green-400 mt-2">+{{ number_format($rentabilidadePercentual, 1, ',', '.') }}%</p>
-                            <p class="text-gray-500 text-sm mt-3">nos últimos 12 meses</p>
-                        </div>
-                        <div class="p-3 bg-green-900/30 rounded-xl">
-                            <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                             </svg>
                         </div>
                     </div>
@@ -167,16 +142,10 @@
                                 <td class="py-4">
                                     <span class="px-2 py-1 text-xs font-medium rounded-full 
                                         {{ $inv->ativo->tipo == 'ACAO' ? 'bg-blue-900/30 text-blue-400' : 
-                                           ($inv->ativo->tipo == 'FII' ? 'bg-green-900/30 text-green-400' : 
-                                           ($inv->ativo->tipo == 'RENDA_FIXA' ? 'bg-yellow-900/30 text-yellow-400' : 
-                                           'bg-red-900/30 text-red-400')) }}">
-                                        {{ $inv->ativo->tipo ? match($inv->ativo->tipo) {
-                                            'ACAO' => 'Ações',
-                                            'FII' => 'Fundos',
-                                            'RENDA_FIXA' => 'Renda Fixa',
-                                            'CRIPTO' => 'Criptomoedas',
-                                            default => $inv->ativo->tipo
-                                        } : 'N/A' }}
+                                        ($inv->ativo->tipo == 'FII' ? 'bg-green-900/30 text-green-400' : 
+                                        ($inv->ativo->tipo == 'RENDA_FIXA' ? 'bg-yellow-900/30 text-yellow-400' : 
+                                        'bg-red-900/30 text-red-400')) }}">
+                                        {{ $inv->ativo->tipo }}
                                     </span>
                                 </td>
                                 <td class="py-4 text-white font-medium">R$ {{ number_format($inv->valor_aplicado, 2, ',', '.') }}</td>

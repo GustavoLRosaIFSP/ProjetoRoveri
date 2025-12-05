@@ -24,17 +24,21 @@ class Ativo extends Model
     public function getRendimentoPercentualAttribute()
     {
         return match ($this->tipo) {
-            'ACAO' => $this->risco === 'alto' ? 1.5 : 1.0,
-            'FII' => 0.8,
-            'RENDA_FIXA' => 0.5,
-            'CRIPTO' => 4.0,
+            
+            Tipo::ACAO => match ($this->risco) {
+                Risco::ARROJADO => 0.3,
+                Risco::MODERADO => 0.2,
+                Risco::CONSERVADOR => 0.1,
+            },
+
+            Tipo::FII => 0.3,
+
+            Tipo::RENDA_FIXA => 0.4,
+
+            Tipo::ETF => 0.3,
+
             default => 0.0,
         };
-    }
-
-    public function getRendimentoMensalAttribute()
-    {
-        return $this->valor_aplicado * ($this->ativo->rendimento_percentual / 100);
     }
 }
 
